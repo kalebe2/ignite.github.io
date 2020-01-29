@@ -1,37 +1,48 @@
 ## Welcome to GitHub Pages
 
-You can use the [editor on GitHub](https://github.com/kalebe2/ignite.github.io/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/kalebe2/ignite.github.io/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+<html>
+<meta charset="utf-8">
+<title>Login</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<?php
+require('db.php');
+session_start();
+// If form submitted, insert values into the database.
+if (isset($_POST['username'])){
+        // removes backslashes
+	$username = stripslashes($_REQUEST['username']);
+        //escapes special characters in a string
+	$username = mysqli_real_escape_string($con,$username);
+	$password = stripslashes($_REQUEST['password']);
+	$password = mysqli_real_escape_string($con,$password);
+	//Checking is user existing in the database or not
+        $query = "SELECT * FROM `users` WHERE username='$username'
+and password='".md5($password)."'";
+	$result = mysqli_query($con,$query) or die(mysql_error());
+	$rows = mysqli_num_rows($result);
+        if($rows==1){
+	    $_SESSION['username'] = $username;
+            // Redirect user to index.php
+	    header("Location: index.php");
+         }else{
+	echo "<div class='form'>
+<h3>Username/password is incorrect.</h3>
+<br/>Click here to <a href='login.php'>Login</a></div>";
+	}
+    }else{
+?>
+<div class="form">
+<h1>Log In</h1>
+<form action="" method="post" name="login">
+<input type="text" name="username" placeholder="Username" required />
+<input type="password" name="password" placeholder="Password" required />
+<br>
+<input name="submit" type="submit" value="Login" />
+</form>
+<p>Not registered yet? <a href='registration.php'>Register Here</a></p>
+</div>
+<?php } ?>
+</body>
+</html>
